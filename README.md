@@ -22,6 +22,8 @@ An enterprise-grade, AI-powered to-do list web app that parses natural language 
   - Color-coded status indicators: `Pending`, `Overdue`, etc.
   - Remaining time or overdue labels
   - Actions: Edit, Delete, Change Status
+  - **Search functionality** to quickly locate tasks
+  - **Filter by Assignee or Priority**
 
 - 🧑‍💻 **User Interactions**
   - Edit task details in-place
@@ -53,7 +55,10 @@ An enterprise-grade, AI-powered to-do list web app that parses natural language 
 
 ## 📸 Screenshot
 
-![Task Manager Screenshot](./Screenshot%202025-05-30%20165106.png)
+![image](https://github.com/user-attachments/assets/de0223e5-da0e-47d1-8cff-7c7c0f197258)
+![image](https://github.com/user-attachments/assets/99ed46d6-0a52-4d70-b0e5-63fd1cdd8dfc)
+
+
 
 ## 🚀 Getting Started
 
