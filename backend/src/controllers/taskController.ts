@@ -30,42 +30,39 @@ export const parseTask = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    let result;
+    let  result = await openaiParser.parseTask(text);
     
-    if (method === 'openai') {
-      result = await openaiParser.parseTask(text);
-    } else {
-      result = await nlpParser.parseTask(text);
-    }
+    // if (method === 'openai') {
+    //   result = await openaiParser.parseTask(text);
+    // } else {
+    //   result = await nlpParser.parseTask(text);
+    // }
 
     // If parsing was successful, save to database
-    if (result.success && result.task) {
+    if (result.success && result.tasks && Array.isArray(result.tasks)) {
       try {
-        const newTask = new Task(result.task);
-        const savedTask = await newTask.save();
-        
-        // Return the saved task with database ID
+        const savedTasks = await Task.insertMany(result.tasks);
         res.status(201).json({
           success: true,
-          task: savedTask,
+          tasks: savedTasks,
           method: result.method
         });
       } catch (dbError) {
-        console.error('Database error:', dbError);
+        console.error("Database error:", dbError);
         res.status(500).json({
           success: false,
-          error: 'Error saving task to database',
+          error: "Error saving tasks to database",
           method: result.method
         });
       }
     } else {
-      // Return parsing error
       res.status(400).json({
         success: false,
-        error: result.error || 'Failed to parse task',
+        error: result.error || "Failed to parse tasks",
         method: result.method
       });
     }
+    
   } catch (error) {
     console.error('Task parsing error:', error);
     res.status(500).json({

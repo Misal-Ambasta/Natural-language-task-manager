@@ -25,24 +25,23 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await apiRequest('GET', '/api/tasks');
-      console.log("response.data", response.data);
       
       // Transform tasks to combine dueDate and dueTime into dueDateTime
-      const transformedTasks = response.data.tasks.map(task => {
+      const transformedTasks = response.data.tasks.map((task: Task) => {
         let dueDateTime = null;
         
         // If both dueDate and dueTime exist, combine them
-        if (task.dueDate && task.dueTime) {
+        if ('dueDate' in task && 'dueTime' in task && task.dueDate && task.dueTime) {
           // Parse date and time parts
-          const [year, month, day] = task.dueDate.split('-').map(Number);
-          const [hours, minutes] = task.dueTime.split(':').map(Number);
+          const [year, month, day] = (task.dueDate as string).split('-').map(Number);
+          const [hours, minutes] = (task.dueTime as string).split(':').map(Number);
           
           // Create a new Date object with combined date and time
           dueDateTime = new Date(year, month - 1, day, hours, minutes);
         } 
         // If only dueDate exists, set time to start of day
-        else if (task.dueDate) {
-          const [year, month, day] = task.dueDate.split('-').map(Number);
+        else if ('dueDate' in task && task.dueDate) {
+          const [year, month, day] = (task.dueDate as string).split('-').map(Number);
           dueDateTime = new Date(year, month - 1, day);
         }
         
@@ -69,7 +68,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         method: 'openai', 
         assignee: 'John'  
       });
-      const data = response.data.task;
+      const data = response.data.tasks;
       
       // Create the task with the parsed data
       if (data) {
@@ -89,14 +88,6 @@ export const useTaskStore = create<TaskState>((set, get) => ({
           dueDateTime = new Date(year, month - 1, day);
         }
         await get().fetchTasks();
-        // await get().createTask({
-        //   name: data.taskName,
-        //   assignee: 'John', 
-        //   dueDateTime: dueDateTime,
-        //   priority: data.priority || 'P4',
-        //   status: 'pending',
-        //   completed: false,
-        // });
       }
       
       return data;

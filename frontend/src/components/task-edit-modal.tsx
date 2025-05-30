@@ -21,9 +21,9 @@ export function TaskEditModal({ task, onClose }: TaskEditModalProps) {
 
   // Helper function to combine dueDate and dueTime into datetime-local format
   const getInitialDateTime = () => {
-    if (task.dueDate && task.dueTime) {
+    if (task.dueDateTime) {
       // Combine date and time strings into a format suitable for datetime-local input
-      return `${task.dueDate}T${task.dueTime}`;
+      return format(task.dueDateTime, "yyyy-MM-dd'T'HH:mm");
     }
     return "";
   };

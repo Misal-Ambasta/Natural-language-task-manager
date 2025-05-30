@@ -32,7 +32,6 @@ export function TaskTable({
   const [selectedTasks, setSelectedTasks] = useState<number[]>([]);
   const { toast } = useToast();
   const { tasks, fetchTasks, updateTask, deleteTask, isLoading, error } = useTaskStore();
-console.log("fetchTasks", tasks)
   // Fetch tasks on component mount
   useEffect(() => {
     fetchTasks();

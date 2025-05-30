@@ -9,7 +9,7 @@ import type { InsertTask, Task } from "@shared/schema";
 import { ParsedTaskEditModal } from "./parsed-task-edit-modal";
 
 interface ParsedTask {
-  name: string;
+  taskName: string;
   assignee: string;
   dueDateTime: string | null;
   priority: string;
@@ -56,7 +56,7 @@ export function ParsePreview() {
     if (!parsedTask) return;
 
     const taskData: InsertTask = {
-      name: parsedTask.name,
+      taskName: parsedTask.taskName,
       assignee: parsedTask.assignee,
       dueDateTime: parsedTask.dueDateTime ? new Date(parsedTask.dueDateTime) : undefined,
       priority: parsedTask.priority,
@@ -72,8 +72,8 @@ export function ParsePreview() {
     
     // Convert parsed task to a temporary task for editing
     const tempTask: Task = {
-      id: -1, // Temporary ID
-      name: parsedTask.name,
+      _id: -1, // Temporary ID
+      taskName: parsedTask.taskName,
       assignee: parsedTask.assignee,
       dueDateTime: parsedTask.dueDateTime ? new Date(parsedTask.dueDateTime) : null,
       priority: parsedTask.priority,
@@ -97,7 +97,7 @@ export function ParsePreview() {
           onSave={(updatedTask: Task) => {
             // Update the parsed task with new values
             const updatedParsedTask: ParsedTask = {
-              name: updatedTask.name,
+              taskName: updatedTask.taskName,
               assignee: updatedTask.assignee,
               dueDateTime: updatedTask.dueDateTime ? updatedTask.dueDateTime.toISOString() : null,
               priority: updatedTask.priority,
@@ -119,7 +119,7 @@ export function ParsePreview() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
                 <div>
                   <label className="block text-slate-600 font-medium mb-1">Task Name</label>
-                  <div className="text-slate-900">{parsedTask.name}</div>
+                  <div className="text-slate-900">{parsedTask.taskName}</div>
                 </div>
                 <div>
                   <label className="block text-slate-600 font-medium mb-1">Assigned To</label>

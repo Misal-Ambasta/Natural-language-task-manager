@@ -10,7 +10,7 @@ export interface Task {
 }
 
 export interface InsertTask {
-  name: string;
+  taskName: string;
   assignee: string;
   dueDateTime?: Date;
   priority: string;
