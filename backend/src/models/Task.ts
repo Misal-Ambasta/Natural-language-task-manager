@@ -1,7 +1,8 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { ParsedTask } from '../types/Task';
+import { ParsedTask } from '../types/Task.js';
 
-export interface ITask extends ParsedTask, Document {}
+// Use Omit to exclude _id from ParsedTask to avoid conflict with Document's _id
+export interface ITask extends Omit<ParsedTask, '_id'>, Document {}
 
 const TaskSchema: Schema = new Schema({
   taskName: {
@@ -27,6 +28,15 @@ const TaskSchema: Schema = new Schema({
     enum: ['P1', 'P2', 'P3', 'P4'],
     default: 'P3'
   },
+  status: {
+    type: String,
+    enum: ['pending', 'in-progress', 'completed'],
+    default: 'pending'
+  },
+  completed: {
+    type: Boolean,
+    default: false
+  },
   confidence: {
     type: Number,
     min: 0,
@@ -48,8 +58,7 @@ const TaskSchema: Schema = new Schema({
 
 // Add indexes for better query performance
 TaskSchema.index({ createdAt: -1 });
-TaskSchema.index({ priority: 1 });
-TaskSchema.index({ assignee: 1 });
-TaskSchema.index({ dueDate: 1 });
 
-export default mongoose.model<ITask>('Task', TaskSchema);
+const Task = mongoose.model<ITask>('Task', TaskSchema);
+
+export default Task;

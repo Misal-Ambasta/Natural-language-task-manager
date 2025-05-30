@@ -4,7 +4,9 @@ export interface ParsedTask {
   assignee: string | null;
   dueDate: string | null;
   dueTime: string | null;
-  priority: 'P1' | 'P2' | 'P3' | 'P4';
+  priority: string;
+  status: string;
+  completed: boolean;
   confidence: number;
   originalText: string;
   parsingMethod: 'openai' | 'nlp-packages';
@@ -17,4 +19,24 @@ export interface ParsingResult {
   task: ParsedTask | null;
   error?: string;
   method: 'openai' | 'nlp-packages';
+}
+
+// Multiple task parsing result
+export interface MultiTaskParsingResult {
+  success: boolean;
+  tasks: ParsedTask[] | null;
+  error?: string;
+  method: string;
+}
+
+// Union type for both single and multiple task results
+export type TaskParsingResult = ParsingResult | MultiTaskParsingResult;
+
+// Type guards to check which type of result we have
+export function isSingleTaskResult(result: TaskParsingResult): result is ParsingResult {
+  return 'task' in result;
+}
+
+export function isMultiTaskResult(result: TaskParsingResult): result is MultiTaskParsingResult {
+  return 'tasks' in result;
 }

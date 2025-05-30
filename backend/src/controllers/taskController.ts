@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import dotenv from 'dotenv';
-import * as openaiParser from '../services/openaiParser';
-import * as nlpParser from '../services/nlpParser';
-import Task, { ITask } from '../models/Task';
+import * as openaiParser from '../services/openaiParser.js';
+import * as nlpParser from '../services/nlpParser.js';
+import Task, { ITask } from '../models/Task.js';
 dotenv.config();
 // Initialize OpenAI parser
 if (process.env.OPENAI_API_KEY) {
@@ -156,7 +156,7 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
     const updates = req.body;
     
     // Validate update data
-    const allowedUpdates = ['taskName', 'assignee', 'dueDate', 'dueTime', 'priority'];
+    const allowedUpdates = ['taskName', 'assignee', 'dueDate', 'dueTime', 'priority', 'status', 'completed'];
     const updateKeys = Object.keys(updates);
     
     const isValidOperation = updateKeys.every(key => allowedUpdates.includes(key));
@@ -164,7 +164,7 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
     if (!isValidOperation) {
       res.status(400).json({
         success: false,
-        error: 'Invalid updates. Only taskName, assignee, dueDate, dueTime, and priority can be updated.'
+        error: 'Invalid updates. Only taskName, assignee, dueDate, dueTime, priority, status, and completed can be updated.'
       });
       return;
     }
