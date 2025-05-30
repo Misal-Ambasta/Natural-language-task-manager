@@ -10,6 +10,14 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Edit, Check, Trash2 } from "lucide-react";
 import { format, isAfter, isBefore, addHours } from "date-fns";
@@ -30,6 +38,8 @@ export function TaskTable({
   onEditTask,
 }: TaskTableProps) {
   const [selectedTasks, setSelectedTasks] = useState<number[]>([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
   const { toast } = useToast();
   const { tasks, fetchTasks, updateTask, deleteTask, isLoading, error } = useTaskStore();
   // Fetch tasks on component mount
@@ -60,8 +70,15 @@ export function TaskTable({
   };
 
   const handleDeleteTask = (id: number) => {
-    if (confirm("Are you sure you want to delete this task?")) {
-      deleteTask(id);
+    setTaskToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteTask = () => {
+    if (taskToDelete !== null) {
+      deleteTask(taskToDelete);
+      setTaskToDelete(null);
+      setDeleteDialogOpen(false);
     }
   };
 
@@ -171,155 +188,176 @@ export function TaskTable({
   });
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200">
-      <div className="p-6 border-b border-slate-200">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">Tasks</h2>
-          <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm" disabled={selectedTasks.length === 0}>
-              Bulk Actions
-            </Button>
+    <>
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+        <div className="p-6 border-b border-slate-200">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-slate-900">Tasks</h2>
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm" disabled={selectedTasks.length === 0}>
+                Bulk Actions
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-12">
-                <Checkbox
-                  checked={selectedTasks.length === filteredTasks.length && filteredTasks.length > 0}
-                  onCheckedChange={handleSelectAll}
-                />
-              </TableHead>
-              <TableHead>Task</TableHead>
-              <TableHead>Assignee</TableHead>
-              <TableHead>Due Date</TableHead>
-              <TableHead>Priority</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="w-24">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8">
-                  <div className="flex justify-center">
-                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  </div>
-                  <div className="mt-2 text-sm text-slate-500">Loading tasks...</div>
-                </TableCell>
+                <TableHead className="w-12">
+                  <Checkbox
+                    checked={selectedTasks.length === filteredTasks.length && filteredTasks.length > 0}
+                    onCheckedChange={handleSelectAll}
+                  />
+                </TableHead>
+                <TableHead>Task</TableHead>
+                <TableHead>Assignee</TableHead>
+                <TableHead>Due Date</TableHead>
+                <TableHead>Priority</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="w-24">Actions</TableHead>
               </TableRow>
-            ) : filteredTasks.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center py-8">
-                  <div className="text-sm text-slate-500">No tasks found</div>
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredTasks.map((task) => (
-                <TableRow key={task._id}>
-                  <TableCell>
-                    <Checkbox
-                      checked={selectedTasks.includes(task._id)}
-                      onCheckedChange={(checked) =>
-                        handleSelectTask(task._id, checked as boolean)
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-start space-x-3">
-                      <div>
-                        <div
-                          className={`text-sm font-medium ${task.completed ? "line-through text-slate-500" : "text-slate-900"}`}
-                        >
-                          {task.taskName}
-                        </div>
-                        <div className="text-sm text-slate-500">
-                          Created {format(new Date(task.createdAt), "h:mm a")}
-                        </div>
-                      </div>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    <div className="flex justify-center">
+                      <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs font-medium">
-                          {task.assignee.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <span className="text-sm text-slate-900">
-                        {task.assignee}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{formatDueDate(task)}</TableCell>
-                  <TableCell>
-                    <Badge className={getPriorityColor(task.priority)}>
-                      {task.priority}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(task)}>
-                      {getStatusText(task)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onEditTask(task)}
-                        className="text-primary hover:text-blue-700"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleCompleteTask(task)}
-                        className="text-green-600 hover:text-green-700"
-                        disabled={isLoading}
-                      >
-                        <Check className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteTask(task._id)}
-                        className="text-red-600 hover:text-red-700"
-                        disabled={isLoading}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    <div className="mt-2 text-sm text-slate-500">Loading tasks...</div>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : filteredTasks.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    <div className="text-sm text-slate-500">No tasks found</div>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredTasks.map((task) => (
+                  <TableRow key={task._id}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedTasks.includes(task._id)}
+                        onCheckedChange={(checked) =>
+                          handleSelectTask(task._id, checked as boolean)
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-start space-x-3">
+                        <div>
+                          <div
+                            className={`text-sm font-medium ${task.completed ? "line-through text-slate-500" : "text-slate-900"}`}
+                          >
+                            {task.taskName}
+                          </div>
+                          <div className="text-sm text-slate-500">
+                            Created {format(new Date(task.createdAt), "h:mm a")}
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-medium">
+                            {task.assignee.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <span className="text-sm text-slate-900">
+                          {task.assignee}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{formatDueDate(task)}</TableCell>
+                    <TableCell>
+                      <Badge className={getPriorityColor(task.priority)}>
+                        {task.priority}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getStatusColor(task)}>
+                        {getStatusText(task)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onEditTask(task)}
+                          className="text-primary hover:text-blue-700"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleCompleteTask(task)}
+                          className="text-green-600 hover:text-green-700"
+                          disabled={isLoading}
+                        >
+                          <Check className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteTask(task._id)}
+                          className="text-red-600 hover:text-red-700"
+                          disabled={isLoading}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {filteredTasks.length > 0 && (
+          <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
+            <div className="text-sm text-slate-700">
+              Showing <span className="font-medium">1</span> to{" "}
+              <span className="font-medium">{filteredTasks.length}</span> of{" "}
+              <span className="font-medium">{filteredTasks.length}</span> results
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm" disabled>
+                Previous
+              </Button>
+              <Button size="sm">1</Button>
+              <Button variant="outline" size="sm" disabled>
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
-      {filteredTasks.length > 0 && (
-        <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
-          <div className="text-sm text-slate-700">
-            Showing <span className="font-medium">1</span> to{" "}
-            <span className="font-medium">{filteredTasks.length}</span> of{" "}
-            <span className="font-medium">{filteredTasks.length}</span> results
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm" disabled>
-              Previous
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this task?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+              Cancel
             </Button>
-            <Button size="sm">1</Button>
-            <Button variant="outline" size="sm" disabled>
-              Next
+            <Button variant="destructive" onClick={confirmDeleteTask}>
+              Delete
             </Button>
-          </div>
-        </div>
-      )}
-    </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
