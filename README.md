@@ -57,7 +57,10 @@ An enterprise-grade, AI-powered to-do list web app that parses natural language 
 
 ![image](https://github.com/user-attachments/assets/de0223e5-da0e-47d1-8cff-7c7c0f197258)
 ![image](https://github.com/user-attachments/assets/99ed46d6-0a52-4d70-b0e5-63fd1cdd8dfc)
-
+![image](https://github.com/user-attachments/assets/6c3c1abb-3c94-441a-8c80-c9ac9479b427)
+![image](https://github.com/user-attachments/assets/dceb40c7-4d66-4075-b0a8-ef58581b46e2)
+![image](https://github.com/user-attachments/assets/00658bbe-85d3-4bb3-9aec-aed59a158e9f)
+![image](https://github.com/user-attachments/assets/b85f42fc-5e00-4445-b313-78dfabd75b7f)
 
 
 ## 🚀 Getting Started
