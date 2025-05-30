@@ -1,0 +1,1 @@
+{"root":["./src/server.ts","./src/controllers/taskcontroller.ts","./src/models/task.ts","./src/routes/taskroutes.ts","./src/services/nlpparser.ts","./src/services/openaiparser.ts","./src/types/task.ts"],"errors":true,"version":"5.8.3"}

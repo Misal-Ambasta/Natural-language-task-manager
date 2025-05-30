@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { ParsedTask, ParsingResult } from "../types/Task";
+import { ParsedTask, ParsingResult } from "../types/Task.js";
 
 // Initialize OpenAI client
 let openaiClient: OpenAI | null = null;
@@ -61,7 +61,7 @@ Current date: ${new Date().toISOString().split('T')[0]}
     if (!content) {
       throw new Error("No content in OpenAI response");
     }
-
+    console.log("OpenAI response:", content);
     try {
       const parsedResponse = JSON.parse(content);
       const task: ParsedTask = {
@@ -70,6 +70,8 @@ Current date: ${new Date().toISOString().split('T')[0]}
         dueDate: parsedResponse.dueDate,
         dueTime: parsedResponse.dueTime,
         priority: parsedResponse.priority || "P3",
+        status: parsedResponse.status || "pending",
+        completed: parsedResponse.completed || false,
         confidence: parsedResponse.confidence || 0.8,
         originalText: input,
         parsingMethod: "openai",
