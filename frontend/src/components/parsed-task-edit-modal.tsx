@@ -15,7 +15,7 @@ interface ParsedTaskEditModalProps {
 
 export function ParsedTaskEditModal({ task, onClose, onSave }: ParsedTaskEditModalProps) {
   const [formData, setFormData] = useState({
-    name: task.taskName,
+    taskName: task.taskName,
     assignee: task.assignee,
     dueDateTime: task.dueDateTime ? format(new Date(task.dueDateTime), "yyyy-MM-dd'T'HH:mm") : "",
     priority: task.priority,
@@ -27,7 +27,7 @@ export function ParsedTaskEditModal({ task, onClose, onSave }: ParsedTaskEditMod
     
     const updatedTask: Task = {
       ...task,
-      taskName: formData.name,
+      taskName: formData.taskName,
       assignee: formData.assignee,
       dueDateTime: formData.dueDateTime ? new Date(formData.dueDateTime) : null,
       priority: formData.priority,
@@ -53,8 +53,8 @@ export function ParsedTaskEditModal({ task, onClose, onSave }: ParsedTaskEditMod
             <Label htmlFor="name">Task Name</Label>
             <Input
               id="name"
-              value={formData.name}
-              onChange={(e) => handleInputChange("name", e.target.value)}
+              value={formData.taskName}
+              onChange={(e) => handleInputChange("taskName", e.target.value)}
               required
             />
           </div>

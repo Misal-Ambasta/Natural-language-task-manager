@@ -277,14 +277,14 @@ export async function parseTask(input: string): Promise<ParsingResult> {
 
     return {
       success: true,
-      task,
+      tasks: task ? [task] : [],
       method: "nlp-packages",
     };
   } catch (error) {
     console.error("Error parsing task with NLP packages:", error);
     return {
       success: false,
-      task: null,
+      tasks: null,
       error: error instanceof Error ? error.message : String(error),
       method: "nlp-packages",
     };

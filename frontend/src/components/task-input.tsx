@@ -24,10 +24,10 @@ export function TaskInput() {
 
     try {
       const result = await parseTask(input);
-      console.log("result", result);
       // Store parsed task for preview
       if (success) {
         queryClient.setQueryData(["parsedTask"], result.task);
+        setInput("");
         toast({
           title: "Success",
           description: "Task parsed successfully",
@@ -56,12 +56,15 @@ export function TaskInput() {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
       <div className="mb-4">
-        <h2 className="text-lg font-semibold text-slate-900 mb-2">Add New Task</h2>
+        <h2 className="text-lg font-semibold text-slate-900 mb-2">
+          Add New Task
+        </h2>
         <p className="text-slate-600 text-sm">
-          Type your task in natural language. Example: "Finish landing page by 11pm 20th June"
+          Type your task in natural language. Example: "Finish landing page by
+          11pm 20th June"
         </p>
       </div>
-      
+
       <div className="space-y-4">
         <div className="relative">
           <Textarea
@@ -76,9 +79,10 @@ export function TaskInput() {
             {input.length}/500
           </div>
         </div>
-        
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4 text-sm text-slate-600">
+
+        {/* 🔧 Responsive Action Row Fix */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:space-x-4 text-sm text-slate-600">
             <div className="flex items-center space-x-1">
               <Wand2 className="w-4 h-4 text-primary" />
               <span>AI-powered parsing</span>
@@ -88,24 +92,25 @@ export function TaskInput() {
               <span>Smart date detection</span>
             </div>
           </div>
-          
-          <div className="flex items-center space-x-3">
-            <Button 
-              variant="outline" 
+
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:space-x-3">
+            <Button
+              variant="outline"
               onClick={handleClear}
               disabled={!input.trim()}
+              className="w-full sm:w-auto"
             >
               Clear
             </Button>
-            <Button 
+            <Button
               onClick={handleParse}
               disabled={!input.trim() || isLoading}
-              className="flex items-center space-x-2"
+              className="w-full sm:w-auto flex items-center justify-center space-x-2"
             >
               {isLoading ? (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : null}
-              <span>Parse Task</span>
+              <span>Parse + Add Task</span>
             </Button>
           </div>
         </div>
